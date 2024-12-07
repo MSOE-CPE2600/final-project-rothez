@@ -1,0 +1,8 @@
+# dependencies
+*.d
+# objects
+*.o
+# executable
+composite
+# data
+*.csv 
