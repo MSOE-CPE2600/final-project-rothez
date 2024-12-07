@@ -266,9 +266,9 @@ void ABDmats(double Q[],double t,double stack_seq[],int layers,\
     return;
 }
 
-void abcdmats(double A[], double B[], double C[], double D[], double result[]) {
+void abcdmats(double A[], double B[], double C[], double D[], double result[]){
     // create a,b,c,d matrices (6x6 inversion)
-    // THE MATH IN THIS FUNCTION DEVELOPED USING MICROSOFT COPILOT
+    // THE MATH IN THIS FUNCTION DEVELOPED WITH HELP FROM MICROSOFT COPILOT
     double invA[9], invD[9];
     Invmat33(A, invA);
     Invmat33(D, invD);

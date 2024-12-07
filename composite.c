@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
             break;
         }
     }
-    double angles[layers];
+    double angles[layers]; // Stacking sequence
     double ang_width=(ang_max-ang_min)/nprocs;
     double ang_min_div[nprocs];
     double ang_max_div[nprocs];
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     mydata->iters = 0; // keeps track of progress
     mydata->iters_total = pow((ang_max-ang_min)/resolution,layers);
     
-    for (int k=0;k<nprocs;k++)
+    for (int k=0;k<nprocs;k++) // make processes
     {
         ang_min_div[k]=ang_min+k*ang_width;
         ang_max_div[k]=ang_min_div[k]+ang_width;
@@ -178,13 +178,19 @@ int main(int argc, char* argv[])
         {
             for (double i=ang_min_div[k];i<ang_max_div[k];i+=resolution)
             {
+                // call recursive for loop function
                 angles[0]=i;
                 nested_for(ang_min,ang_max,resolution,angles,layers-1,0,mydata);
             } 
             exit(0); 
         }
+        else if(pid<0)
+        {
+            perror("fork");
+            return 1;
+        }
     }
-    for(int k=0;k<nprocs;k++)
+    for(int k=0;k<nprocs;k++) // wait for processes to finish
     {
         wait(NULL);
     }
@@ -205,39 +211,3 @@ int main(int argc, char* argv[])
     pthread_mutex_destroy(&mymutex);
     return 0;
 }
-/*
-double ang_min = input[20];
-    double ang_max = input[21];
-    double resolution = input[22];
-
-
-    mydata->iters = 0; // keeps track of progress
-    mydata->iters_total = pow((ang_max-ang_min)/resolution+1,layers);
-    
-    double angles[layers];
-    int nprocs = get_nprocs()-1; // use as many processors as are available
-    double ang_width=(ang_max-ang_min)/nprocs;
-
-    double ang_min_div[nprocs];
-    double ang_max_div[nprocs];
-    
-    for (int k=0;k<nprocs;k++)
-    {
-        ang_min_div[k]=ang_min+k*ang_width;
-        ang_max_div[k]=ang_min_div[k]+ang_width;
-        int pid=fork();
-        if(pid==0)
-        {
-            for (double i=ang_min_div[k];i<=ang_max_div[k];i+=resolution)
-            {
-                angles[0]=i;
-                nested_for(ang_min,ang_max,resolution,angles,layers-1,0,mydata);
-            } 
-            exit(0); 
-        }
-    }
-    for(int k=0;k<nprocs;k++)
-    {
-        wait(NULL);
-    }
-    */
