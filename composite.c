@@ -26,13 +26,25 @@
 
 int main(int argc, char* argv[])
 {   
+    if(argc!=3) // makes sure correct number of arguments
+    {
+        printf("Please enter correct arguments:\n");
+        printf("number of layers, then source file path\n");
+        printf("Example: $ ./composite 5 data.csv\n");
+        exit(1);
+    }
+    if(atoi(argv[1])<=1) // makes sure layer number valid (2+)
+    {
+        printf("Please enter valid number of layers\n");
+        exit(1);
+    }
     // Read in parameters from file *******************************************
     printf("Welcome to Composite Compute!\n\nCalculating:\n");
     double input[MAX_LINES];
     int counter=0;
     FILE *file = fopen(argv[2], "r");
     if (!file) {
-        perror("Unable to open file!");
+        perror("Unable to open file");
         exit(1);
     }
     char line[MAX_LINE_LENGTH];
@@ -161,7 +173,7 @@ int main(int argc, char* argv[])
             break;
         }
     }
-    double angles[layers];
+    double angles[layers]; // Stacking sequence
     double ang_width=(ang_max-ang_min)/nprocs;
     double ang_min_div[nprocs];
     double ang_max_div[nprocs];
@@ -169,7 +181,7 @@ int main(int argc, char* argv[])
     mydata->iters = 0; // keeps track of progress
     mydata->iters_total = pow((ang_max-ang_min)/resolution,layers);
     
-    for (int k=0;k<nprocs;k++)
+    for (int k=0;k<nprocs;k++) // make processes
     {
         ang_min_div[k]=ang_min+k*ang_width;
         ang_max_div[k]=ang_min_div[k]+ang_width;
@@ -178,13 +190,19 @@ int main(int argc, char* argv[])
         {
             for (double i=ang_min_div[k];i<ang_max_div[k];i+=resolution)
             {
+                // call recursive for loop function
                 angles[0]=i;
                 nested_for(ang_min,ang_max,resolution,angles,layers-1,0,mydata);
             } 
             exit(0); 
         }
+        else if(pid<0)
+        {
+            perror("fork");
+            return 1;
+        }
     }
-    for(int k=0;k<nprocs;k++)
+    for(int k=0;k<nprocs;k++) // wait for processes to finish
     {
         wait(NULL);
     }
@@ -205,39 +223,3 @@ int main(int argc, char* argv[])
     pthread_mutex_destroy(&mymutex);
     return 0;
 }
-/*
-double ang_min = input[20];
-    double ang_max = input[21];
-    double resolution = input[22];
-
-
-    mydata->iters = 0; // keeps track of progress
-    mydata->iters_total = pow((ang_max-ang_min)/resolution+1,layers);
-    
-    double angles[layers];
-    int nprocs = get_nprocs()-1; // use as many processors as are available
-    double ang_width=(ang_max-ang_min)/nprocs;
-
-    double ang_min_div[nprocs];
-    double ang_max_div[nprocs];
-    
-    for (int k=0;k<nprocs;k++)
-    {
-        ang_min_div[k]=ang_min+k*ang_width;
-        ang_max_div[k]=ang_min_div[k]+ang_width;
-        int pid=fork();
-        if(pid==0)
-        {
-            for (double i=ang_min_div[k];i<=ang_max_div[k];i+=resolution)
-            {
-                angles[0]=i;
-                nested_for(ang_min,ang_max,resolution,angles,layers-1,0,mydata);
-            } 
-            exit(0); 
-        }
-    }
-    for(int k=0;k<nprocs;k++)
-    {
-        wait(NULL);
-    }
-    */
