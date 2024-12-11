@@ -26,13 +26,25 @@
 
 int main(int argc, char* argv[])
 {   
+    if(argc!=3) // makes sure correct number of arguments
+    {
+        printf("Please enter correct arguments:\n");
+        printf("number of layers, then source file path\n");
+        printf("Example: $ ./composite 5 data.csv\n");
+        exit(1);
+    }
+    if(atoi(argv[1])<=1) // makes sure layer number valid (2+)
+    {
+        printf("Please enter valid number of layers\n");
+        exit(1);
+    }
     // Read in parameters from file *******************************************
     printf("Welcome to Composite Compute!\n\nCalculating:\n");
     double input[MAX_LINES];
     int counter=0;
     FILE *file = fopen(argv[2], "r");
     if (!file) {
-        perror("Unable to open file!");
+        perror("Unable to open file");
         exit(1);
     }
     char line[MAX_LINE_LENGTH];
