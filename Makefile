@@ -3,7 +3,7 @@ CFLAGS=-c -Wall
 LDFLAGS= -lrt -lpthread -lm
 SOURCES= composite.c composite_calcs.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLES=composite composite_calcs.c
+EXECUTABLES=composite 
 
 all: $(SOURCES) $(EXECUTABLES)
 
@@ -12,9 +12,6 @@ all: $(SOURCES) $(EXECUTABLES)
 
 composite: composite.o composite_calcs.o
 	$(CC) composite.o composite_calcs.o $(LDFLAGS) -o $@
-
-#mandelmovie: mandelmovie.o jpegrw.o
-#	$(CC) mandelmovie.o jpegrw.o $(LDFLAGS) -o $@
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
